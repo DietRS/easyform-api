@@ -18,11 +18,11 @@ module.exports = async (req, res) => {
   const rawUri = process.env.MONGO_URI || '';
   console.log('API: MONGO_URI present:', rawUri.startsWith('mongodb') ? 'yes' : 'no');
 
-  // Helper to connect
+  // Helper to connect (create client without legacy options)
   async function withClient(fn) {
     let client;
     try {
-      client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+      client = new MongoClient(process.env.MONGO_URI);
       await client.connect();
       console.log('API: Mongo connected');
       const db = client.db(); // DB from URI
