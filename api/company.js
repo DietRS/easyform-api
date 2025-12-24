@@ -46,6 +46,22 @@ module.exports = async (req, res) => {
     }
   }
 
+  // GET by id via query param ?id=<ObjectId>
+if (req.method === 'GET' && req.query && req.query.id) {
+  try {
+    const id = req.query.id;
+    const doc = await withClient(async (db) => {
+      const companies = db.collection('companies');
+      return await companies.findOne({ _id: new ObjectId(id) });
+    });
+    if (!doc) return res.status(404).json({ error: 'not_found' });
+    return res.status(200).json({ success: true, company: doc });
+  } catch (err) {
+    console.error('API: Mongo error (GET by id):', err);
+    return res.status(500).json({ error: 'db_error', message: err.message });
+  }
+}
+
   // POST: create a company
   if (req.method === 'POST') {
     const body = req.body || {};
